@@ -16,35 +16,54 @@
 
 Example:
 
-1. **Define Main Function `generate_fractal(start_point, angle, length, depth)`**
+1. **Define Main Function `generate_fractal(start_point, num_polygon_sides, radius, depth, max_depth, length_scaling_factor, end_probability)`**
    - **Inputs**:
      - `start_point`: Tuple of coordinates (x, y).
-     - `angle`: Current angle in degrees.
-     - `length`: Length of the current line segment.
+     - `num_polygon_sides`: Number of sides for the polygon.
+     - `radius`: Radius for the polygon.
      - `depth`: Current recursion depth.
+     - `max_depth`: max recursion depth.
+     - `length_scaling_factor`: Scaling factor to vary each recursion.
+     - `end_probabilityh`: Probability for a vertice to end its recursion.
    - **Process**:
-     - **If** `depth` is 0:
+     - **If** `depth` is > than `max_depth` or `num_polygon_sides` is lower than 3:
        - **Return** (End recursion).
      - **Else**:
-       - Calculate `end_point` using trigonometry:
-         - `end_x = start_x + length * cos(radians(angle))`
-         - `end_y = start_y + length * sin(radians(angle))`
-       - Create a line from `start_point` to `end_point` using Shapely.
-       - **For** each branch (e.g., left and right):
-         - **Calculate** new angle:
-           - Left branch: `new_angle = angle + angle_change`
-           - Right branch: `new_angle = angle - angle_change`
-         - **Calculate** new length:
-           - `new_length = length * length_scaling_factor`
+       - Generate `polygon` using function `Polygon`:
+         - `polygon_vertices = Polygons(start_point, radius, num_polygon_sides)`
+         - Close the polygon by appending the first point
+           - `polygon_vertices.append(polygon_vertices[0])`
+         - Putting the polygon vertices into a list
+           - `new_point_polygon = list(polygon_vertices)`
+         - Make list of lines between the polygon vertices using `LineString` from `Shapely`
+           - `polygon_lines = LineString(new_point_polygon)`
+           - `line_list.append(polygon_lines)`
+       - Generate `Center lines` using function `lines`
+         - `line_vertices = lines(start_point, radius, num_polygon_sides)`
+         - Putting the line vertices into a list
+           - `new_point_line = list(line_vertices)`
+         - Make list of lines between the polygon vertices and the startpoint using `LineString` from `Shapely`
+           - `center_point = [start_point] + new_point_line`
+           - `center_lines = LineString(center_point)`
+           - `line_list.append(center_lines_lines)`
+       - Increment depth
+         - `next_depth = depth + 1`
+       - **For** each branch (e.g., each polygon vertice):
+         - **Calculate** new number of polygon sides (-1, +1):
+           - `side_adjustment = random.choice([-1, 1])`
+           - `new_polygon_sides = max(3, num_polygon_sides + side_adjustment)`
+         - **Calculate** new radius by a factor between 0.5 and 1.5:
+           - `nrandom_scaling_factor = length_scaling_factor * (0.5 + random.random())`
+           - `new_radius = radius * random_scaling_factor`
          - **Recursive Call**:
-           - `generate_fractal(end_point, new_angle, new_length, depth - 1)`
+           - `generate_fractal(vertex, new_polygon_sides,  new_radius, next_depth, max_depth, length_scaling_factor, end_probability)`
      - **Return** (After recursive calls).
 
 2. **Initialize Parameters**
-   - Set `start_point`, `initial_angle`, `initial_length`, `recursion_depth`, `angle_change`, `length_scaling_factor`.
+   - Set `start_point`, `initial_num_polygon_sides`, `initial_radius`, `recursion_depth`, `max_recursion_depth`, `length_scaling_factor`, `end_probablity`.
 
 3. **Call `generate_fractal` Function**
-   - Begin the fractal generation by calling `generate_fractal(start_point, initial_angle, initial_length, recursion_depth)`.
+   - Begin the fractal generation by calling `generate_fractal(start_point, num_polygon_sides, initial_radius, recursion_depth, max_recursion_depth, length_scaling_factor, end_probability)`.
 
 4. **Visualization**
    - Collect all the lines generated.
@@ -59,15 +78,16 @@ Example:
 
 Example:
 
-In my implementation, the `generate_fractal` function recursively draws line segments representing branches of a fractal tree. The function calculates the end point of each line using trigonometric functions based on the current angle and length.
+In my implementation, the `generate_fractal` function recursively draws line segments representing polygons and/or centerlines from each polygon vertice to the polygon center. The function calculates the polygon vertices using trigonometric functions based on the initial starting point of the polygon and the number of sides the polygons shall have.
 
 At each recursion step, the function:
 
-- Decreases the `length` by multiplying it with `length_scaling_factor`.
-- Adjusts the `angle` by adding or subtracting `angle_change` to create branching.
-- Calls itself recursively for each branch until the `recursion_depth` reaches zero.
+- Chance of ending the recursion for a vertice using `if random.random() < end_probability:`.
+- Increases or decreases the `num_polygon_sides` by 1 using `side_adjustment = random.choice([-1, 1])`.
+- Increases or decreases the `radius` by multiplying it with `length_scaling_factor` and `random_scaling_factor`.
+- Calls itself recursively for each branch until the `max_recursion_depth` reaches zero or all vertice ends.
 
-This approach creates a self-similar pattern characteristic of fractals, where each branch splits into smaller branches in a consistent manner.
+This approach creates a more organic and random shape as the randomness introduces more variaty in each recursion.
 
 ---
 
@@ -77,33 +97,155 @@ This approach creates a self-similar pattern characteristic of fractals, where e
 
 Example:
 
-### Fractal Pattern 1: Basic Fractal Tree
+### Fractal Pattern 1: Center Lines 1
 
-![Fractal Tree](images/example.png)
+![Fractal Tree](images/centerlines1.png)
 
 - **Parameters**:
-  - `angle_change`: 30°
-  - `length_scaling_factor`: 0.7
-  - `recursion_depth`: 5
+  - `start_point = (0, 0)`
+  - `num_polygon_sides = 4`
+  - `initial_radius = 100`
+  - `recursion_depth = 0`
+  - `max_recursion_depth = 5`
+  - `length_scaling_factor = 0.5`
+  - `end_probability = 0.15`
 - **Observations**:
-  - The fractal tree exhibits symmetry and balance.
-  - As the recursion depth increases, the level of detail in the branches increases.
+  - The fractal is quite balanced with all sides having a similiar amount of recursions.
+  - As the recursion depth increases, the level of detail is lost as the branches increases, because of lines intersecting.
 
-*(Repeat for other fractal patterns.)*
+### Fractal Pattern 2: Center Lines 2
 
+![Fractal Tree](images/centerlines2.png)
+
+- **Parameters**:
+  - `start_point = (0, 0)`
+  - `num_polygon_sides = 4`
+  - `initial_radius = 100`
+  - `recursion_depth = 0`
+  - `max_recursion_depth = 5`
+  - `length_scaling_factor = 0.5`
+  - `end_probability = 0.15`
+- **Observations**:
+  - The fractal tree exhibits heavy assymmetry with the upper left part having more recursions.  
+
+### Fractal Pattern 3: Center Lines 3
+
+![Fractal Tree](images/centerlines3.png)
+
+- **Parameters**:
+  - `start_point = (0, 0)`
+  - `num_polygon_sides = 4`
+  - `initial_radius = 100`
+  - `recursion_depth = 0`
+  - `max_recursion_depth = 5`
+  - `length_scaling_factor = 0.5`
+  - `end_probability = 0.15`
+- **Observations**:
+  - The fractal tree exhibits low symmetry but effectively shows the randomness having a bigger impact on the balance.
+
+### Fractal Pattern 4: Polygon Lines 1
+
+![Fractal Tree](images/polygon1.png)
+
+- **Parameters**:
+  - `start_point = (0, 0)`
+  - `num_polygon_sides = 4`
+  - `initial_radius = 100`
+  - `recursion_depth = 0`
+  - `max_recursion_depth = 5`
+  - `length_scaling_factor = 0.5`
+  - `end_probability = 0.15`
+- **Observations**:
+  - The fractal exhibits clear distinction between the changes in recursions.
+  - As the recursion depth increases, the level of cluster increases as well, making it cluttered.
+
+### Fractal Pattern 5: Polygon Lines 2
+
+![Fractal Tree](images/polygon2.png)
+
+- **Parameters**:
+  - `start_point = (0, 0)`
+  - `num_polygon_sides = 4`
+  - `initial_radius = 100`
+  - `recursion_depth = 0`
+  - `max_recursion_depth = 5`
+  - `length_scaling_factor = 0.5`
+  - `end_probability = 0.15`
+- **Observations**:
+  - The fractal is quite cluttered.
+
+### Fractal Pattern 6: Polygon Lines 3 & 4
+
+![Fractal Tree](images/polygon3.png)
+
+**Parameters**:
+  - `start_point = (0, 0)`
+  - `num_polygon_sides = 6`
+  - `initial_radius = 100`
+  - `recursion_depth = 0`
+  - `max_recursion_depth = 5`
+  - `length_scaling_factor = 0.6`
+  - `end_probability = 0.15`
+
+![Fractal Tree](images/polygon4.png)
+
+- **Parameters**:
+  - `start_point = (0, 0)`
+  - `num_polygon_sides = 3`
+  - `initial_radius = 100`
+  - `recursion_depth = 0`
+  - `max_recursion_depth = 3`
+  - `length_scaling_factor = 0.6`
+  - `end_probability = 0.15`
+
+- **Observations**:
+  - The fractal polygon lines 3 is extremely cluttered.
+  - The fractal polygon lines 4 is not cluttered and is easy to see the gradual progression of the recursions.
+  - This is showcasing how important the initial input is, as stating with even justa hexagon can very easily make the pattern cluttered by having to many inputs
+
+### Fractal Pattern 7: Polygon & Center Lines 1
+
+![Fractal Tree](images/pol_cen1.png)
+
+**Parameters**:
+  - `start_point = (0, 0)`
+  - `num_polygon_sides = 3`
+  - `initial_radius = 100`
+  - `recursion_depth = 0`
+  - `max_recursion_depth = 5`
+  - `length_scaling_factor = 0.7`
+  - `end_probability = 0.3`
+
+**Observations**:
+  - The fractal is extremely cluttered.
+
+### Fractal Pattern 7: Polygon & Center Lines 1
+
+![Fractal Tree](images/pol_cen2.png)
+
+**Parameters**:
+  - `start_point = (0, 0)`
+  - `num_polygon_sides = 4`
+  - `initial_radius = 100`
+  - `recursion_depth = 0`
+  - `max_recursion_depth = 3`
+  - `length_scaling_factor = 1`
+  - `end_probability = 0.4`
+
+**Observations**:
+  - Using both the center lines and the polygon lines makes it quite hard to get a result, which isn't just completly cluttered.
 ---
 
 ## Challenges and Solutions
 
-*(Discuss any challenges you faced during the assignment and how you overcame them.)*
+- **Challenge**: Creating functions and correctly using them afterwards. (using functions and refering to the return of the function)
+  - **Solution**: Going back over lectures and online materials. (make a name and set it equal `point1 = function(x, y)`)
 
-Example:
+- **Challenge**: Having lists/tuples (data trees) of points and then refering to them and then using them for other functions.
+  - **Solution**: Check if the data is in the right format, using either print or other methods. 
 
-- **Challenge**: Managing the growing number of line segments and ensuring they are correctly plotted.
-  - **Solution**: Stored all line segments in a list and plotted them after the recursion completed.
-
-- **Challenge**: Implementing randomness without losing the overall structure.
-  - **Solution**: Introduced randomness within controlled bounds for angles and lengths.
+**Challenge**: Using each indice in a list in a function Having lists/tuples (data trees) of points and then refering to then using them for other functions.
+  - **Solution**: Using the `for _ in ____` which will go through each indice in the list and use the expression on it.
 
 ---
 
@@ -111,9 +253,6 @@ Example:
 
 *(List any resources you used or found helpful during the assignment.)*
 
-- **Shapely Manual**: [https://shapely.readthedocs.io/en/stable/manual.html](https://shapely.readthedocs.io/en/stable/manual.html)
-- **Matplotlib Pyplot Tutorial**: [https://matplotlib.org/stable/tutorials/introductory/pyplot.html](https://matplotlib.org/stable/tutorials/introductory/pyplot.html)
+- **Lectures**:
 
 ---
-
-*(Feel free to expand upon these sections to fully capture your work and learning process.)*
