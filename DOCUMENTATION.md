@@ -12,10 +12,6 @@
 
 ## Pseudo-Code
 
-*(Provide detailed pseudo-code explaining the logic of your program. This should clearly outline your recursive functions, parameter definitions, and how they contribute to the final fractal pattern.)*
-
-Example:
-
 1. **Define Main Function `generate_fractal(start_point, num_polygon_sides, radius, depth, max_depth, length_scaling_factor, end_probability)`**
    - **Inputs**:
      - `start_point`: Tuple of coordinates (x, y).
@@ -74,10 +70,6 @@ Example:
 
 ## Technical Explanation
 
-*(Provide a concise explanation of your code, focusing on recursion and geometric manipulations. Discuss how your approach generates the final fractal pattern and the mathematical principles involved.)*
-
-Example:
-
 In my implementation, the `generate_fractal` function recursively draws line segments representing polygons and/or centerlines from each polygon vertice to the polygon center. The function calculates the polygon vertices using trigonometric functions based on the initial starting point of the polygon and the number of sides the polygons shall have.
 
 At each recursion step, the function:
@@ -93,13 +85,9 @@ This approach creates a more organic and random shape as the randomness introduc
 
 ## Results
 
-*(Include images of your generated fractal patterns, and discuss any observations or interesting findings.)*
-
-Example:
-
 ### Fractal Pattern 1: Center Lines 1
 
-![Fractal Tree](images/centerlines1.png)
+![Fractal Tree](images/Fractal1.png)
 
 - **Parameters**:
   - `start_point = (0, 0)`
@@ -115,7 +103,7 @@ Example:
 
 ### Fractal Pattern 2: Center Lines 2
 
-![Fractal Tree](images/centerlines2.png)
+![Fractal Tree](images/Fractal2.png)
 
 - **Parameters**:
   - `start_point = (0, 0)`
@@ -130,7 +118,7 @@ Example:
 
 ### Fractal Pattern 3: Center Lines 3
 
-![Fractal Tree](images/centerlines3.png)
+![Fractal Tree](images/Fractal3.png)
 
 - **Parameters**:
   - `start_point = (0, 0)`
@@ -145,7 +133,7 @@ Example:
 
 ### Fractal Pattern 4: Polygon Lines 1
 
-![Fractal Tree](images/polygon1.png)
+![Fractal Tree](images/Fractal4.png)
 
 - **Parameters**:
   - `start_point = (0, 0)`
@@ -161,7 +149,7 @@ Example:
 
 ### Fractal Pattern 5: Polygon Lines 2
 
-![Fractal Tree](images/polygon2.png)
+![Fractal Tree](images/Fractal5.png)
 
 - **Parameters**:
   - `start_point = (0, 0)`
@@ -176,7 +164,7 @@ Example:
 
 ### Fractal Pattern 6: Polygon Lines 3 & 4
 
-![Fractal Tree](images/polygon3.png)
+![Fractal Tree](images/Fractal6-1.png)
 
 **Parameters**:
   - `start_point = (0, 0)`
@@ -187,7 +175,7 @@ Example:
   - `length_scaling_factor = 0.6`
   - `end_probability = 0.15`
 
-![Fractal Tree](images/polygon4.png)
+![Fractal Tree](images/Fractal6-2.png)
 
 - **Parameters**:
   - `start_point = (0, 0)`
@@ -205,7 +193,7 @@ Example:
 
 ### Fractal Pattern 7: Polygon & Center Lines 1
 
-![Fractal Tree](images/pol_cen1.png)
+![Fractal Tree](images/Fractal7.png)
 
 **Parameters**:
   - `start_point = (0, 0)`
@@ -219,9 +207,9 @@ Example:
 **Observations**:
   - The fractal is extremely cluttered.
 
-### Fractal Pattern 7: Polygon & Center Lines 1
+### Fractal Pattern 8: Polygon & Center Lines 2
 
-![Fractal Tree](images/pol_cen2.png)
+![Fractal Tree](images/Fractal8.png)
 
 **Parameters**:
   - `start_point = (0, 0)`
@@ -246,13 +234,9 @@ Example:
 
 **Challenge**: Using each indice in a list in a function Having lists/tuples (data trees) of points and then refering to then using them for other functions.
   - **Solution**: Using the `for _ in ____` which will go through each indice in the list and use the expression on it.
-
 ---
 
 ## References
 
-*(List any resources you used or found helpful during the assignment.)*
-
 - **Lectures**:
-
 ---
